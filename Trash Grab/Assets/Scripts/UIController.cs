@@ -11,10 +11,23 @@ public class UIController : MonoBehaviour
     public GameObject panel;
     public bool openOrClose;
     private GlobalData globalData;
+
+    [Header("FadeToBlack")]
     public GameObject blackScreen;
     private float fadeSpeed = 5;
     private float fadeAmount;
     public bool fade;
+
+
+    [Header("Animal Control Dialogue")]
+    public GameObject dialogue;
+    public TextMeshProUGUI victimDialogue;
+    public TextMeshProUGUI acDialogue;
+    public string[] victimText;
+    public string[] acText;
+    private float typingSpeed = 0.05f;
+    public Image animalControl;
+    public Sprite picture;
 
     [Header("Rebind Keys")]
     public bool rebind;
@@ -25,7 +38,7 @@ public class UIController : MonoBehaviour
     private void Awake()
     {
         if (fade)
-            StartCoroutine(FadeToBlack(0, false, false));
+            StartCoroutine(FadeToBlack(0, false, false, false));
         globalData = GameObject.FindGameObjectWithTag("GlobalData").GetComponent<GlobalData>();
         if (rebind)
         {
@@ -79,13 +92,13 @@ public class UIController : MonoBehaviour
 
     public void OpenScene(int scene)
     {
-        StartCoroutine(FadeToBlack(scene, true, true));
+        StartCoroutine(FadeToBlack(scene, true, true, false));
     }
     public void StartFade()
     {
-        StartCoroutine(FadeToBlack(0, true, false));
+        StartCoroutine(FadeToBlack(0, true, false, true));
     }
-    public IEnumerator FadeToBlack(int scene, bool fadeInOrOut, bool changeScene)
+    public IEnumerator FadeToBlack(int scene, bool fadeInOrOut, bool changeScene, bool caught)
     {
         blackScreen.SetActive(true);
         Color screenColour = blackScreen.GetComponent<Image>().color;
@@ -100,6 +113,19 @@ public class UIController : MonoBehaviour
             }
             if(changeScene)
                 SceneManager.LoadScene(scene);
+            if (caught)
+            {
+                dialogue.SetActive(true);
+                Color dialogueColour = dialogue.GetComponent<Image>().color;
+                while (dialogueColour.a < 1)
+                {
+                    fadeAmount = dialogueColour.a + (fadeSpeed * Time.deltaTime);
+                    dialogueColour = new Color(dialogueColour.r, dialogueColour.g, dialogueColour.b, fadeAmount);
+                    dialogue.GetComponent<Image>().color = dialogueColour;
+                    yield return null;
+                }
+                StartTyping();
+            }
         }
         else
         {
@@ -113,6 +139,44 @@ public class UIController : MonoBehaviour
             blackScreen.SetActive(false);
         }
     }
+    private bool doOnce;
+    private void StartTyping()
+    {
+        if (!doOnce)
+        {
+            doOnce = true;
+            StartCoroutine("DisplayTextVictim");
+        }
+            
+    }
+    private IEnumerator DisplayTextVictim()
+    {
+        victimDialogue.text = "";
+        foreach(char letter in victimText[0].ToCharArray())
+        {
+            victimDialogue.text += letter;
+            yield return new WaitForSeconds(typingSpeed);
+        }
+        if(victimDialogue.text == victimText[0])
+        {
+            StartCoroutine("DisplayTextAC");
+        }
+    }
+    private IEnumerator DisplayTextAC()
+    {
+        animalControl.sprite = picture;
+        acDialogue.text = "";
+        foreach (char letter in acText[0].ToCharArray())
+        {
+            acDialogue.text += letter;
+            yield return new WaitForSeconds(typingSpeed);
+        }
+        if (acDialogue.text == acText[0])
+        {
+            
+        }
+    }
+    
 
     public void ExitGame()
     {

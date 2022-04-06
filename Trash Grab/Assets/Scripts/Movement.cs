@@ -50,9 +50,11 @@ public class Movement : MonoBehaviour
 
         controller.Move(move * speed * Time.deltaTime);
 
-        if(Input.GetButton(interact))
+        if (interactible)
         {
-            gimme.Play();
+
         }
     }
+
+    
 }

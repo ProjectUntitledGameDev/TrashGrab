@@ -7,6 +7,7 @@ public class GlobalData : MonoBehaviour
     public GameObject panel;
     public GameObject quitGamePanel;
     public UIController[] keyBindings;
+    
 
     private void Awake()
     {

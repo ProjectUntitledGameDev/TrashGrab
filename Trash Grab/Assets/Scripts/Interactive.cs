@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-public class Objective : MonoBehaviour
+public class Interactive : MonoBehaviour
 {
-    readonly int range;
     public GameObject interact;
     public TextMeshProUGUI text;
+    public UIController uiController;
+    public bool entrance;
+    public Transform entryPoint;
     private void Awake()
     {
         text.text = "Press '" + PlayerPrefs.GetString("Interact").ToUpper() + "' to Interact";
