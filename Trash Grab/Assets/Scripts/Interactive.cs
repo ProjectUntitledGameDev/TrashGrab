@@ -19,6 +19,7 @@ public class Interactive : MonoBehaviour
         {
             interact.SetActive(true);
             other.GetComponent<Movement>().interactible = true;
+            other.GetComponent<Movement>().currentInteraction = this;
         }
     }
 
@@ -28,6 +29,7 @@ public class Interactive : MonoBehaviour
         {
             interact.SetActive(false);
             other.GetComponent<Movement>().interactible = false;
+            
         }
     }
 }

@@ -1205,8 +1205,8 @@ MonoBehaviour:
   interact: {fileID: 1908215806}
   text: {fileID: 1421879370}
   uiController: {fileID: 0}
-  entrance: 0
-  entryPoint: {fileID: 0}
+  entrance: 1
+  entryPoint: {fileID: 649664554}
 --- !u!212 &172013181
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4004,8 +4004,8 @@ MonoBehaviour:
   interact: {fileID: 1707691104}
   text: {fileID: 2089975541}
   uiController: {fileID: 0}
-  entrance: 0
-  entryPoint: {fileID: 0}
+  entrance: 1
+  entryPoint: {fileID: 190806177}
 --- !u!212 &700809709
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7729,6 +7729,7 @@ MonoBehaviour:
   controller: {fileID: 1069713744}
   speed: 10
   interactible: 0
+  currentInteraction: {fileID: 0}
   gimme: {fileID: 1069713747}
 --- !u!143 &1069713744
 CharacterController:
@@ -10563,8 +10564,8 @@ MonoBehaviour:
   interact: {fileID: 272022987}
   text: {fileID: 1725366572}
   uiController: {fileID: 0}
-  entrance: 0
-  entryPoint: {fileID: 0}
+  entrance: 1
+  entryPoint: {fileID: 1736841899}
 --- !u!212 &1542904748
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -14039,8 +14040,8 @@ MonoBehaviour:
   interact: {fileID: 682350476}
   text: {fileID: 858903989}
   uiController: {fileID: 0}
-  entrance: 0
-  entryPoint: {fileID: 0}
+  entrance: 1
+  entryPoint: {fileID: 1301760518}
 --- !u!212 &1972137828
 SpriteRenderer:
   m_ObjectHideFlags: 0

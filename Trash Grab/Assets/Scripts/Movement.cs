@@ -8,6 +8,7 @@ public class Movement : MonoBehaviour
     public CharacterController controller;
     public int speed = 5;
     public bool interactible;
+    public Interactive currentInteraction;
     public AudioSource gimme;
     private string forward;
     private string backward;
@@ -50,9 +51,13 @@ public class Movement : MonoBehaviour
 
         controller.Move(move * speed * Time.deltaTime);
 
-        if (interactible)
+        if (Input.GetButton(interact))
         {
-
+            if (currentInteraction.entrance)
+            {
+                
+                this.transform.position = currentInteraction.entryPoint.position;
+            }
         }
     }
 
