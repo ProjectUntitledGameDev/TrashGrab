@@ -11,13 +11,13 @@ public class UIController : MonoBehaviour
     public GameObject panel;
     public bool openOrClose;
     private GlobalData globalData;
-
+    private GameObject player;
     [Header("FadeToBlack")]
     public GameObject blackScreen;
     private float fadeSpeed = 5;
     private float fadeAmount;
     public bool fade;
-
+    public Transform[] spawnLocations;
 
     [Header("Animal Control Dialogue")]
     public GameObject dialogue;
@@ -37,6 +37,7 @@ public class UIController : MonoBehaviour
     public string defaultInput;
     private void Awake()
     {
+        player = GameObject.FindGameObjectWithTag("Player");
         if (fade)
             StartCoroutine(FadeToBlack(0, false, false, false));
         globalData = GameObject.FindGameObjectWithTag("GlobalData").GetComponent<GlobalData>();
@@ -94,9 +95,9 @@ public class UIController : MonoBehaviour
     {
         StartCoroutine(FadeToBlack(scene, true, true, false));
     }
-    public void StartFade()
+    public void StartFade(int scene, bool fadeInOrOut, bool changeScene, bool caught)
     {
-        StartCoroutine(FadeToBlack(0, true, false, true));
+        StartCoroutine(FadeToBlack(scene, fadeInOrOut, changeScene, caught));
     }
     public IEnumerator FadeToBlack(int scene, bool fadeInOrOut, bool changeScene, bool caught)
     {
@@ -129,6 +130,18 @@ public class UIController : MonoBehaviour
         }
         else
         {
+            if (caught)
+            {
+                Color dialogueColour = dialogue.GetComponent<Image>().color;
+                while (dialogueColour.a > 0)
+                {
+                    fadeAmount = dialogueColour.a - (fadeSpeed * Time.deltaTime);
+                    dialogueColour = new Color(dialogueColour.r, dialogueColour.g, dialogueColour.b, fadeAmount);
+                    dialogue.GetComponent<Image>().color = dialogueColour;
+                    yield return null;
+                }
+                dialogue.SetActive(false);
+            }
             while (screenColour.a > 0)
             {
                 fadeAmount = screenColour.a - (fadeSpeed * Time.deltaTime);
@@ -137,6 +150,7 @@ public class UIController : MonoBehaviour
                 yield return null;
             }
             blackScreen.SetActive(false);
+
         }
     }
     private bool doOnce;
@@ -173,7 +187,9 @@ public class UIController : MonoBehaviour
         }
         if (acDialogue.text == acText[0])
         {
-            
+            int i = UnityEngine.Random.Range(0, 4);
+            player.transform.position = spawnLocations[i].position;
+            StartCoroutine(FadeToBlack(0, false, false, true));
         }
     }
     

@@ -13,7 +13,7 @@ public class Interactive : MonoBehaviour
     {
         text.text = "Press '" + PlayerPrefs.GetString("Interact").ToUpper() + "' to Interact";
     }
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if(other.tag == "Player")
         {
@@ -22,14 +22,15 @@ public class Interactive : MonoBehaviour
             other.GetComponent<Movement>().currentInteraction = this;
         }
     }
-
-    private void OnTriggerExit(Collider other)
+    
+    private void OnTriggerExit2D(Collider2D other)
     {
         if (other.tag == "Player")
         {
             interact.SetActive(false);
             other.GetComponent<Movement>().interactible = false;
-            
+            other.GetComponent<Movement>().currentInteraction = null;
+
         }
     }
 }

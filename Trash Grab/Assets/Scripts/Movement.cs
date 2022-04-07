@@ -1,20 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Movement : MonoBehaviour
 {
-    
-    public CharacterController controller;
+    public Rigidbody2D rb;
     public int speed = 5;
     public bool interactible;
     public Interactive currentInteraction;
     public AudioSource gimme;
+    public UIController screenController;
     private string forward;
     private string backward;
     private string left;
     private string right;
     private string interact;
+    private Vector2 movement;
     // Update is called once per frame
     private void Awake()
     {
@@ -29,37 +31,78 @@ public class Movement : MonoBehaviour
     {
         float zMov = 0;
         float xMov = 0;
-        
+        /*
         if (Input.GetButton(forward))
         {
-            xMov = 1;
+            movement.x = Input.GetAxisRaw(forward);
         }
         if (Input.GetButton(backward))
         {
-            xMov = -1;
+            movement.x = -Input.GetAxisRaw(backward);
         }
         if (Input.GetButton(left))
         {
-            zMov = 1;
+            movement.y = Input.GetAxisRaw(left);
         }
         if (Input.GetButton(right))
         {
-            zMov = -1;
+            movement.y = -Input.GetAxisRaw(right);
         }
-        
-        UnityEngine.Vector3 move = transform.up * xMov - transform.right * zMov;
+        */
+        movement.x = Input.GetAxisRaw("Horizontal");
+        movement.y = Input.GetAxisRaw("Vertical");
 
-        controller.Move(move * speed * Time.deltaTime);
-
-        if (Input.GetButton(interact))
+        if (Input.GetButton(interact) && currentInteraction != null)
         {
             if (currentInteraction.entrance)
             {
+                fadeInOrOut = true;
+                StartCoroutine("FadeToBlack");
                 
-                this.transform.position = currentInteraction.entryPoint.position;
+            }
+            else
+            {
+
             }
         }
     }
 
-    
+    private void FixedUpdate()
+    {
+
+        rb.MovePosition(rb.position + movement * speed * Time.fixedDeltaTime);
+    }
+    private float fadeSpeed = 5;
+    private float fadeAmount;
+    private bool fadeInOrOut;
+    public GameObject blackScreen;
+    IEnumerator FadeToBlack()
+    {
+        blackScreen.SetActive(true);
+        Color screenColour = blackScreen.GetComponent<Image>().color;
+        if (fadeInOrOut)
+        {
+            while (screenColour.a < 1)
+            {
+                fadeAmount = screenColour.a + (fadeSpeed * Time.deltaTime);
+                screenColour = new Color(screenColour.r, screenColour.g, screenColour.b, fadeAmount);
+                blackScreen.GetComponent<Image>().color = screenColour;
+                yield return null;
+            }
+            fadeInOrOut = false;
+            this.transform.position = currentInteraction.entryPoint.position;
+            StartCoroutine("FadeToBlack");
+        }
+        else
+        {
+            while (screenColour.a > 0)
+            {
+                fadeAmount = screenColour.a - (fadeSpeed * Time.deltaTime);
+                screenColour = new Color(screenColour.r, screenColour.g, screenColour.b, fadeAmount);
+                blackScreen.GetComponent<Image>().color = screenColour;
+                yield return null;
+            }
+            blackScreen.SetActive(false);
+        }
+    }
 }
