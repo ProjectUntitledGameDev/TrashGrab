@@ -29,8 +29,6 @@ public class Movement : MonoBehaviour
     }
     private void Update()
     {
-        float zMov = 0;
-        float xMov = 0;
         /*
         if (Input.GetButton(forward))
         {

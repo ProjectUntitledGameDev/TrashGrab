@@ -28,6 +28,7 @@ public class UIController : MonoBehaviour
     private float typingSpeed = 0.05f;
     public Image animalControl;
     public Sprite picture;
+    public AnimalControl animalControlScript;
 
     [Header("Rebind Keys")]
     public bool rebind;
@@ -98,6 +99,8 @@ public class UIController : MonoBehaviour
     public void StartFade(int scene, bool fadeInOrOut, bool changeScene, bool caught)
     {
         StartCoroutine(FadeToBlack(scene, fadeInOrOut, changeScene, caught));
+        animalControlScript.pauseTimer = true;
+        Debug.Log(animalControlScript.totalTime);
     }
     public IEnumerator FadeToBlack(int scene, bool fadeInOrOut, bool changeScene, bool caught)
     {
@@ -116,6 +119,7 @@ public class UIController : MonoBehaviour
                 SceneManager.LoadScene(scene);
             if (caught)
             {
+                
                 dialogue.SetActive(true);
                 Color dialogueColour = dialogue.GetComponent<Image>().color;
                 while (dialogueColour.a < 1)
@@ -159,19 +163,21 @@ public class UIController : MonoBehaviour
         if (!doOnce)
         {
             doOnce = true;
+            caughtInt++;
             StartCoroutine("DisplayTextVictim");
         }
             
     }
+    public int caughtInt = -1;
     private IEnumerator DisplayTextVictim()
     {
         victimDialogue.text = "";
-        foreach(char letter in victimText[0].ToCharArray())
+        foreach(char letter in victimText[caughtInt].ToCharArray())
         {
             victimDialogue.text += letter;
             yield return new WaitForSeconds(typingSpeed);
         }
-        if(victimDialogue.text == victimText[0])
+        if(victimDialogue.text == victimText[caughtInt])
         {
             StartCoroutine("DisplayTextAC");
         }
@@ -180,16 +186,27 @@ public class UIController : MonoBehaviour
     {
         animalControl.sprite = picture;
         acDialogue.text = "";
-        foreach (char letter in acText[0].ToCharArray())
+        foreach (char letter in acText[caughtInt].ToCharArray())
         {
             acDialogue.text += letter;
             yield return new WaitForSeconds(typingSpeed);
         }
-        if (acDialogue.text == acText[0])
+        if (acDialogue.text == acText[caughtInt])
         {
             int i = UnityEngine.Random.Range(0, 4);
             player.transform.position = spawnLocations[i].position;
             StartCoroutine(FadeToBlack(0, false, false, true));
+            if(caughtInt > 0)
+            {
+                animalControlScript.totalTime = (animalControlScript.totalTime - (10 * caughtInt));
+            }
+            else
+            {
+                animalControlScript.StartCoroutine("Countdown");
+            }
+            animalControlScript.pauseTimer = false;
+            Debug.Log(animalControlScript.totalTime);
+            doOnce = false; 
         }
     }
     

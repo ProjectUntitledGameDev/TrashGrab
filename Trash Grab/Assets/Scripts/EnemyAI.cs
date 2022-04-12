@@ -87,7 +87,8 @@ public class EnemyAI : MonoBehaviour
             }
             else
             {
-                blackScreen.StartFade(0, true, false, true) ;
+                
+                blackScreen.StartFade(0, true, false, true);
             }
            
         }
