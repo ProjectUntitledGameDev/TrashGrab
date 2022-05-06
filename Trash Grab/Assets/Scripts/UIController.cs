@@ -27,8 +27,17 @@ public class UIController : MonoBehaviour
     public string[] acText;
     private float typingSpeed = 0.05f;
     public Image animalControl;
-    public Sprite picture;
+    public Image resident;
+    public Sprite[] residentVar;
+    public Sprite[] acVar;
     public AnimalControl animalControlScript;
+
+
+    [Header("Game Over")]
+    public string gameVictimText;
+    public string gameACText;
+    public Sprite gameResident;
+    public Sprite gameAC;
 
     [Header("Rebind Keys")]
     public bool rebind;
@@ -100,7 +109,6 @@ public class UIController : MonoBehaviour
     {
         StartCoroutine(FadeToBlack(scene, fadeInOrOut, changeScene, caught));
         animalControlScript.pauseTimer = true;
-        Debug.Log(animalControlScript.totalTime);
     }
     public IEnumerator FadeToBlack(int scene, bool fadeInOrOut, bool changeScene, bool caught)
     {
@@ -164,6 +172,8 @@ public class UIController : MonoBehaviour
         {
             doOnce = true;
             caughtInt++;
+            victimDialogue.text = "";
+            acDialogue.text = "";
             StartCoroutine("DisplayTextVictim");
         }
             
@@ -171,43 +181,82 @@ public class UIController : MonoBehaviour
     public int caughtInt = -1;
     private IEnumerator DisplayTextVictim()
     {
-        victimDialogue.text = "";
-        foreach(char letter in victimText[caughtInt].ToCharArray())
+        if (!globalData.gameOver)
         {
-            victimDialogue.text += letter;
-            yield return new WaitForSeconds(typingSpeed);
+            resident.sprite = residentVar[caughtInt];
+            victimDialogue.text = "";
+            foreach (char letter in victimText[caughtInt].ToCharArray())
+            {
+                victimDialogue.text += letter;
+                yield return new WaitForSeconds(typingSpeed);
+            }
+            if (victimDialogue.text == victimText[caughtInt])
+            {
+                StartCoroutine("DisplayTextAC");
+            }
         }
-        if(victimDialogue.text == victimText[caughtInt])
+        else
         {
-            StartCoroutine("DisplayTextAC");
+            resident.sprite = gameResident;
+            victimDialogue.text = "";
+            foreach (char letter in gameVictimText.ToCharArray())
+            {
+                victimDialogue.text += letter;
+                yield return new WaitForSeconds(typingSpeed);
+            }
+            if (victimDialogue.text == gameVictimText)
+            {
+                StartCoroutine("DisplayTextAC");
+            }
         }
+        
+        
     }
+    public Animator phoneCall;
     private IEnumerator DisplayTextAC()
     {
-        animalControl.sprite = picture;
-        acDialogue.text = "";
-        foreach (char letter in acText[caughtInt].ToCharArray())
+        if (!globalData.gameOver)
         {
-            acDialogue.text += letter;
-            yield return new WaitForSeconds(typingSpeed);
+            animalControl.sprite = acVar[0];
+            acDialogue.text = "";
+            foreach (char letter in acText[caughtInt].ToCharArray())
+            {
+                acDialogue.text += letter;
+                yield return new WaitForSeconds(typingSpeed);
+            }
+            if (acDialogue.text == acText[caughtInt])
+            {
+                int i = UnityEngine.Random.Range(0, 4);
+                player.transform.position = spawnLocations[i].position;
+                StartCoroutine(FadeToBlack(0, false, false, true));
+                if (caughtInt > 0)
+                {
+                    animalControlScript.totalTime = (animalControlScript.totalTime - (10 * caughtInt));
+                }
+                else
+                {
+                    animalControlScript.StartCoroutine("Countdown");
+                    phoneCall.SetTrigger("Call");
+                }
+                
+                doOnce = false;
+            }
         }
-        if (acDialogue.text == acText[caughtInt])
+        else
         {
-            int i = UnityEngine.Random.Range(0, 4);
-            player.transform.position = spawnLocations[i].position;
-            StartCoroutine(FadeToBlack(0, false, false, true));
-            if(caughtInt > 0)
+            animalControl.sprite = gameAC;
+            acDialogue.text = "";
+            foreach (char letter in gameACText.ToCharArray())
             {
-                animalControlScript.totalTime = (animalControlScript.totalTime - (10 * caughtInt));
+                acDialogue.text += letter;
+                yield return new WaitForSeconds(typingSpeed);
             }
-            else
+            if (acDialogue.text == gameACText)
             {
-                animalControlScript.StartCoroutine("Countdown");
+                
             }
-            animalControlScript.pauseTimer = false;
-            Debug.Log(animalControlScript.totalTime);
-            doOnce = false; 
         }
+        animalControlScript.pauseTimer = false;
     }
     
 
@@ -215,10 +264,40 @@ public class UIController : MonoBehaviour
     {
         Application.Quit();
     }
+    
     private void OnDisable()
     {
         if(SceneManager.GetActiveScene().name == "MainMenu")
+        {
             globalData.panel = null;
+        }
+        else
+        {
+            globalData.panel = globalData.pause;
+        }
+            
+    }
+
+    [Header("TrashTech")]
+    public string[] trashName;
+    public string[] trashDesc;
+    public Sprite[] trashImage;
+    public int index;
+    public void GetGlobal()
+    {
+        globalData = GameObject.FindGameObjectWithTag("GlobalData").GetComponent<GlobalData>();
+    }
+    public void PickItem()
+    {
+        for (int i = 0; i < globalData.trashUIName.Length; i++)
+        {
+            globalData.trashUIName[i].text = trashName[i];
+            globalData.trashUIDesc[i].text = trashDesc[i];
+            globalData.trashUIImage[i].sprite = trashImage[i];
+            
+        }
+        globalData.menuImage.sprite = globalData.raccoons[index];
+        PlayerPrefs.SetInt("Raccoon", index);
     }
 
 }

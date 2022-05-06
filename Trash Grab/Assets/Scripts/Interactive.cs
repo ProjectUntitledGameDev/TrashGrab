@@ -8,8 +8,11 @@ public class Interactive : MonoBehaviour
     public TextMeshProUGUI text;
     public UIController uiController;
     public bool entrance;
+    public bool exit;
     public Transform entryPoint;
-    private void Awake()
+    public Sprite empty;
+    public bool used;
+    private void Start()
     {
         text.text = "Press '" + PlayerPrefs.GetString("Interact").ToUpper() + "' to Interact";
     }
@@ -17,6 +20,7 @@ public class Interactive : MonoBehaviour
     {
         if(other.tag == "Player")
         {
+            
             interact.SetActive(true);
             other.GetComponent<Movement>().interactible = true;
             other.GetComponent<Movement>().currentInteraction = this;
